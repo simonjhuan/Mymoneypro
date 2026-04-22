@@ -1,121 +1,121 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>กราฟกองทุน</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 20px;
-    max-width: 900px;
-    margin: 0 auto;
-    background-color: #f5f5f5;
-  }
-  h2 {
-    color: #333;
-    text-align: center;
-  }
-  .chart-container {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  #loading {
-    text-align: center;
-    padding: 40px;
-    color: #666;
-  }
-  #error {
-    text-align: center;
-    padding: 40px;
-    color: #d32f2f;
-    background: #ffebee;
-    border-radius: 8px;
-    display: none;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อมูลมูลค่าต่อหน่วย (GPF)</title>
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            margin: 20px;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+        h2 {
+            text-align: center;
+            color: #003366;
+        }
+        .table-container {
+            overflow-x: auto; /* ให้เลื่อนตารางซ้ายขวาได้ถ้าจอมือถือเล็ก */
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #0056b3;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #e2e6ea;
+        }
+        /* ไฮไลท์วันที่ */
+        .date-col {
+            font-weight: bold;
+            color: #0056b3;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
 
-<h2>📊 กราฟกองทุน</h2>
+    <h2>📊 ตารางข้อมูลมูลค่าต่อหน่วย</h2>
 
-<div id="loading">กำลังโหลดข้อมูล...</div>
-<div id="error"></div>
+    <div class="table-container">
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>วันที่</th>
+                    <!-- หัวตารางจะถูกสร้างอัตโนมัติจาก JSON -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ข้อมูลจะถูกเติมที่นี่ -->
+            </tbody>
+        </table>
+    </div>
 
-<div class="chart-container">
-  <canvas id="myChart"></canvas>
-</div>
+    <script>
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                const table = document.getElementById('data-table');
+                const thead = table.querySelector('thead tr');
+                const tbody = table.querySelector('tbody');
 
-<script>
-fetch('data.json')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('ไม่สามารถโหลดไฟล์ data.json ได้');
-    }
-    return response.json();
-  })
-  .then(data => {
-    document.getElementById('loading').style.display = 'none';
-    
-    const labels = data.map(d => d.date);
-    
-    const ctx = document.getElementById('myChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'ชีวิต 35 (g35)',
-            data: data.map(d => d.g35),
-            borderColor: '#36a2eb',
-            backgroundColor: 'rgba(54, 162, 235, 0.1)',
-            borderWidth: 3,
-            fill: false,
-            tension: 0.3
-          },
-          {
-            label: 'ตราสารหนี้ (bond)',
-            data: data.map(d => d.bond),
-            borderColor: '#ff6384',
-            backgroundColor: 'rgba(255, 99, 132, 0.1)',
-            borderWidth: 3,
-            fill: false,
-            tension: 0.3
-          },
-          {
-            label: 'ทองคำ (gold)',
-            data: data.map(d => d.gold),
-            borderColor: '#ffcd56',
-            backgroundColor: 'rgba(255, 206, 86, 0.1)',
-            borderWidth: 3,
-            fill: false,
-            tension: 0.3
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top'
-          }
-        }
-      }
-    });
-  })
-  .catch(error => {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('error').style.display = 'block';
-    document.getElementById('error').innerHTML = 
-      '<strong>⚠️ เกิดข้อผิดพลาด</strong><br>' + error.message;
-    console.error('Error:', error);
-  });
-</script>
+                // 1. หาชื่อหัวข้อทั้งหมด (ยกเว้น date)
+                // สมมติข้อมูลแรกมี key ครบ
+                const firstItem = data[0];
+                const headers = Object.keys(firstItem).filter(key => key !== 'date');
+
+                // 2. สร้างหัวตาราง
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    // แปลงชื่อตัวแปรภาษาอังกฤษเป็นภาษาไทยสวยงาม (Optional)
+                    th.innerText = header; 
+                    thead.appendChild(th);
+                });
+
+                // 3. สร้างแถวข้อมูล
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    
+                    // วันที่
+                    const tdDate = document.createElement('td');
+                    tdDate.classList.add('date-col');
+                    tdDate.innerText = row.date;
+                    tr.appendChild(tdDate);
+
+                    // ข้อมูลกองทุน
+                    headers.forEach(header => {
+                        const td = document.createElement('td');
+                        td.innerText = row[header];
+                        tr.appendChild(td);
+                    });
+
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.body.innerHTML = '<p style="text-align:center; color:red;">โหลดข้อมูลไม่ได้</p>';
+            });
+    </script>
 
 </body>
 </html>
