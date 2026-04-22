@@ -1,0 +1,1291 @@
+var brandText = "";
+var icon_chat = "";
+var icon_close = "";
+var icon_close_sm =
+    '<svg id="icon-close-sm" xmlns="http://www.w3.org/2000/svg" width="20" height="20" style="display: flex; cursor: pointer;" viewBox="0 0 18 18"><path fill="white" d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"/></svg>';
+var style_chat = "";
+var jwt_token = "-";
+
+var vvh = window.innerHeight;
+var vvw = window.innerWidth;
+
+var isBotInit = false;
+var isBotActive = false;
+var isStartFullScreen = false;
+
+var os = undefined;
+
+var brandToolsLayer = "";
+
+var m_chatbot;
+var m_botName;
+
+var m_botUrl;
+//var url_saveToken = "http://localhost:8080/dd_cubika-secure-token/api/tokenvault/v1/saveToken";
+//var url_broadcastHost = "localhost:8080/TestWebSocket/sub/";
+
+//var url_saveToken = "https://cubikaai.southeastasia.cloudapp.azure.com/secure-token/api/tokenvault/v1/saveToken";
+var url_saveToken =
+    "https://cubika-securetoken.azurewebsites.net/cubika-secure-token/api/tokenvault/v1/saveToken";
+//var url_broadcastHost = "cubikaai.southeastasia.cloudapp.azure.com/broadcast/subscribe/";
+var url_broadcastHost =
+    "cubika-broadcast-service.azurewebsites.net/cubika-broadcast/sub/";
+
+var phoneModel = "";
+var m_init = false;
+
+var userId = undefined;
+
+let wasDragged = false;
+
+//100vh problem with iOS Safari
+const appHeight = () => {
+    const doc = document.documentElement;
+    doc.style.setProperty("--app-height", `${window.innerHeight}px`);
+};
+window.addEventListener("resize", appHeight);
+appHeight();
+
+function getMobileOperatingSystem() {
+    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    phoneModel = userAgent;
+
+    // Windows Phone must come first because its UA also contains "Android"
+    if (/windows phone/i.test(userAgent)) {
+        return "Windows Phone";
+    }
+
+    if (/android/i.test(userAgent)) {
+        return "Android";
+    }
+
+    // iOS detection from: http://stackoverflow.com/a/9039885/177710
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        return "iOS";
+    }
+
+    return "unknown";
+}
+
+function changeBotOrientation() {
+    //alert('OS = ' + os);
+    //alert('Phone Model = ' + phoneModel);
+
+    vvh = window.innerHeight;
+    vvw = window.innerWidth;
+
+    //alert('VVH = ' + vvh + ', VVW = ' + vvw);
+
+    //	alert('change bot orientation : vvh = ' + vvh + ", vvw = " + vvw);
+    //	alert('is bot active? ' + isBotActive);
+
+    let fullscreen = false;
+
+    if (os == "unknown" && (vvh <= 500 || vvw <= 400 || isStartFullScreen)) {
+        fullscreen = true;
+    } else if (os == "iOS" || os == "Android") {
+        fullscreen = true;
+    }
+
+    let cubikChat = document.getElementById("cubik-chat");
+
+    if (fullscreen == true && cubikChat) {
+        //$('.ddlg-chat').css("position", "fixed");
+        //$('.ddlg-chat').css("left", "0px");
+        //$('.ddlg-chat').css("top", "0px");
+        //$('.ddlg-chat').css("width", "calc(100vw)");
+        //$('.ddlg-chat').css("min-width", "calc(100vw)");
+
+        cubikChat.style.position = "fixed";
+        cubikChat.style.left = "0px";
+        cubikChat.style.top = "0px";
+        cubikChat.style.width = "calc(100vw)";
+        cubikChat.style.minWidth = "calc(100vw)";
+
+        if (os == "iOS") {
+            //alert('fullscreen == iOS');
+            //            	vh = window.innerHeight * 0.01;
+            //            	document.documentElement.style.setProperty('--vh', `${vh}px`);
+            //
+            //	        	$('.ddlg-chat').css("height", "calc(var(--vh, 1vh) * 100)");
+            //	        	$('.ddlg-chat').css("min-height", "calc(var(--vh, 1vh) * 100)");
+
+            if (vvh > 700) {
+                //$('.ddlg-chat').css("height", "calc(100vh - 110px)");
+                //$('.ddlg-chat').css("min-height", "calc(100vh - 110px)");
+                cubikChat.style.height = "calc(100vh - 110px)";
+                cubikChat.style.minHeight = "calc(100vh - 110px)";
+            } else if (vvh > 380) {
+                //alert('vvh > 380');
+                //$('.ddlg-chat').css("height", "calc(100vh - 41px)");
+                //$('.ddlg-chat').css("min-height", "calc(100vh - 41px)");
+                cubikChat.style.height = "calc(100vh - 41px)";
+                cubikChat.style.minHeight = "calc(100vh - 41px)";
+            } else {
+                //$('.ddlg-chat').css("height", "calc(100vh - 70px)");
+                //$('.ddlg-chat').css("min-height", "calc(100vh - 70px)");
+
+                cubikChat.style.height = "calc(100vh - 70px)";
+                cubikChat.style.minHeight = "calc(100vh - 70px)";
+            }
+            cubikChat.style.height = "calc(100vh)";
+            cubikChat.style.height = "var(--app-height)";
+            cubikChat.style.minHeight = "calc(100vh)";
+            cubikChat.style.minHeight = "var(--app-height)";
+        } else if (os == "Andriod") {
+            //Andriod
+            //alert('fullscreen == Andriod');
+            //$('.ddlg-chat').css("height", "calc(100vh - 5px)");
+            //$('.ddlg-chat').css("min-height", "calc(100vh - 5px)");
+            cubikChat.style.height = "calc(100vh - 55px)";
+            cubikChat.style.minHeight = "calc(100vh - 55px)";
+        } else if (os == "unknown") {
+            //alert('fullscreen == unknown');
+            //$('.ddlg-chat').css("height", "calc(100vh - 5px)");
+            //$('.ddlg-chat').css("min-height", "calc(100vh - 5px)");
+
+            cubikChat.style.height = "calc(100vh - 55px)";
+            cubikChat.style.minHeight = "calc(100vh - 55px)";
+        } else {
+            //alert('fullscreen == unknown 2');
+            //$('.ddlg-chat').css("height", "calc(100vh - 55px)");
+            //$('.ddlg-chat').css("min-height", "calc(100vh - 55px)");
+            cubikChat.style.height = "calc(100vh - 55px)";
+            cubikChat.style.minHeight = "calc(100vh - 55px)";
+        }
+
+        let cubikBotHeader = document.getElementById("bot-header");
+
+        if (cubikBotHeader) {
+            //$('#bot-header').css("border-top-left-radius", "0px");
+            //$('#bot-header').css("border-top-right-radius", "0px");
+            //$('#bot-footer').css("border-bottom-left-radius", "0px");
+            //$('#bot-footer').css("border-bottom-right-radius", "0px");
+
+            cubikBotHeader.style.borderTopLeftRadius = "0px";
+            cubikBotHeader.style.borderTopRightRadius = "0px";
+            cubikBotHeader.style.borderBottomLeftRadius = "0px";
+            cubikBotHeader.style.borderBottomRightRadius = "0px";
+        }
+
+        let cubikBotFrame = document.getElementById("cubik-bot-frame");
+
+        if (cubikBotFrame) {
+            if (isBotActive == true) {
+                //$('#cubik-bot-frame').css("top", "0px");
+                cubikBotFrame.style.top = "0px";
+            } else {
+                //$('#cubik-bot-frame').css("bottom", "25px");
+                //$('#cubik-bot-frame').css("right", "25px");
+                cubikBotFrame.style.bottom = "25px";
+                cubikBotFrame.style.right = "25px";
+                cubikBotFrame.style.top = "";
+            }
+        }
+    }
+}
+
+async function initBot(botName, chatbot) {
+    if (m_init == true) {
+        return;
+    }
+
+    isBotInit = true;
+    m_botName = botName;
+    console.log("Init Bot : " + botName + " : " + JSON.stringify(chatbot));
+
+    //	if(!chatbot.branding) {
+    //		chatbot.branding = 'covid-19';
+    //	}
+    m_chatbot = chatbot;
+    os = getMobileOperatingSystem();
+
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty("--vh", `${vh}px`);
+
+    if (!chatbot.calltoaction) {
+        chatbot.calltoaction = "Talk to our experts";
+    }
+
+    icon_chat = '<i class="fa fa-comments"></i>';
+
+    if (chatbot && chatbot.branding && chatbot.branding == "covid-19") {
+        brandText =
+            'Presented by <a href="https://www.microsoft.com/th-th/" >Microsoft</a> & <a href="http://www.ddlghq.com">Digital Dialogue</a>';
+        icon_chat =
+            '<img src="https://cubika.azurewebsites.net/cubikbot/plugins/cubik-bot-ui/icon/covid-19/3-3.png" style="width:100%;"/>';
+        style_chat =
+            "background-color: rgba(255, 255, 255, 0);box-shadow: none;";
+        //icon_close = '<i class="fa fa-times" id="icon-close"></i>';
+        icon_close =
+            '<svg id="icon-close" xmlns="http://www.w3.org/2000/svg" width="55" height="55" style="display: none;" viewBox="0 0 18 18"><path fill="white" d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"/></svg>';
+        //icon_close_sm = '<svg id="icon-close-sm" xmlns="http://www.w3.org/2000/svg" width="28" height="28" style="display: block;" viewBox="0 0 18 18"><path fill="white" d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"/></svg>';
+    } else {
+        brandText =
+            '<div><a href="http://www.ddlghq.com" style=" display: none; "><img src="" style="width: 10px;height: 10px;text-align: center;vertical-align: middle;margin-top: 4px;"></a></div>';
+        icon_chat = '<i class="fa fa-comments" id="icon-chat"></i>';
+
+        if (chatbot && chatbot.color) {
+            style_chat = "background: " + chatbot.color + ";";
+        }
+
+        if (chatbot && chatbot.startFullscreen) {
+            isStartFullScreen = chatbot.startFullscreen;
+        }
+
+        if (chatbot.chat_icon && chatbot.chat_icon.icon_img) {
+            icon_chat = chatbot.chat_icon.icon_img;
+        }
+
+        if (chatbot.chat_icon && chatbot.chat_icon.drop_shadow) {
+            if (chatbot.chat_icon.drop_shadow != true) {
+                style_chat = "background: transparent; box-shadow: none;";
+            } else {
+                style_chat = "background: transparent; ";
+            }
+        }
+
+        //icon_close = '<i class="fa fa-times" id="icon-close" style="background-color : ' + chatbot.color + '"></i>';
+        icon_close =
+            '<svg id="icon-close" xmlns="http://www.w3.org/2000/svg" width="55" height="55" style="display: none;" viewBox="0 0 18 18"><path fill="white" d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"/></svg>';
+        //icon_close_sm = '<svg id="icon-close-sm" xmlns="http://www.w3.org/2000/svg" width="28" height="28" style="display: block;" viewBox="0 0 18 18"><path fill="white" d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"/></svg>';
+    }
+
+    if (
+        chatbot &&
+        chatbot.branding &&
+        chatbot.branding.toLowerCase() == "bih"
+    ) {
+        brandToolsLayer =
+            "" +
+            '<div style="background: #fff;width: 32px;height: 32px;position: absolute;margin: -36px 0px 0px 8px; z-index: 1000;">' +
+            '<img src="https://bihcubika-prd.southeastasia.cloudapp.azure.com/cubika/media/v1/get.action?id=3" style="width: 32px; height: 32px; vertical-align: middle;" border=0 />' +
+            "</div>";
+    } else if (
+        chatbot &&
+        chatbot.branding &&
+        chatbot.branding.toLowerCase() == "bot"
+    ) {
+        brandText = "";
+    }
+
+    var calltoaction_text = "";
+    if (chatbot.calltoaction_text) {
+        calltoaction_text = chatbot.calltoaction_text;
+    } else {
+        calltoaction_text = chatbot.calltoaction;
+    }
+
+    //	var calltoaction_text = chatbot.calltoaction;
+    //	if(chatbot.calltoaction_callout == false) {
+    //		calltoaction_text = '';
+    //	}
+    calltoaction_text = calltoaction_text.replaceAll('"', "&#34;");
+
+    jwt_token = chatbot.authen_jwt;
+    var icon_style = "";
+
+    if (chatbot.chat_icon && chatbot.chat_icon.drop_shadow == true) {
+        icon_style =
+            "width: 100%; box-shadow: 2px 2px 8px -3px #000; border-radius : 50%;";
+    } else {
+        icon_style = "width: 100%; border-radius : 50%;";
+    }
+
+    if (!chatbot.chat_icon || !chatbot.chat_icon.icon_img) {
+        icon_style =
+            "width: 100%; box-shadow: 2px 2px 8px -3px #000; border-radius : 50%; background: " +
+            chatbot.color +
+            ";";
+    }
+
+    var primaryFont = chatbot.primaryFontSet;
+    if (!primaryFont || primaryFont == "") {
+        primaryFont = "Arial";
+    }
+
+    var bh_font_size = chatbot.bot_header_font_size;
+    if (!bh_font_size || bh_font_size == "") {
+        bh_font_size = "1em";
+    }
+
+    console.log("[CUBIKA:BOTUI-JS] Bot-Frame Position : " + chatbot.position);
+    console.log("[CUBIKA:BOTUI-JS] Bot-Chat Style : " + style_chat);
+    console.log("[CUBIKA:BOTUI-JS] Bot-Icon Style : " + icon_style);
+
+    userId = chatbot.userId;
+    if (!userId || userId == "") {
+        //userId = genUserId();
+        //chatbot.userId = userId;
+
+        //if(jwt_token && (chatbot.branding == 'SET' || chatbot.branding == 'set')) {
+        if (jwt_token) {
+            let jwt_ec = parseJwt(jwt_token);
+            console.log("[CUBIKA:BOTUI-JS] JWT : " + JSON.stringify(jwt_ec));
+
+            if (
+                chatbot.channel.localeCompare("ISP", "en", {
+                    sensitivity: "base",
+                }) == 0
+            ) {
+                let m_username = jwt_ec.username;
+                let m_company = jwt_ec.companyId;
+
+                console.log(
+                    "[CUBIKA:BOTUI-JS] m_user / m_comp : " +
+                    m_username +
+                    ", " +
+                    m_company
+                );
+
+                userId = m_username + "-" + m_company + "-" + chatbot.channel;
+
+                console.log("[CUBIKA:BOTUI-JS] userId : " + userId);
+
+                //} else if(chatbot.channel == 'SETLINK') {
+            } else if (
+                chatbot.channel.localeCompare("SETLINK", "en", {
+                    sensitivity: "base",
+                }) == 0
+            ) {
+                let m_user = jwt_ec.N_LOGIN;
+                let m_cmp = jwt_ec.I_USER;
+
+                userId = m_user + "-" + m_cmp + "-" + chatbot.channel;
+            } else {
+                userId = genUserId();
+            }
+        }
+
+        chatbot.userId = userId;
+    }
+
+    let agentUuid = chatbot.agentId;
+    let channel = chatbot.channel;
+    let botUrl = "";
+    //let qIndex = -1;
+
+    let p_arr = [];
+
+    if (chatbot && chatbot.url) {
+        //let urlObject = parseUrl(chatbot.url);
+        //let botUrl = urlObject.protocol + '//' + urlObject.hostname + urlObject.path;
+
+        const searchParams = new URLSearchParams(chatbot.url);
+        for (let p of searchParams) {
+            for (m of p) {
+                console.log("[CUBIKA:BOTUI-JS] m = " + m);
+                let qPos = m.indexOf("?");
+                if (qPos > -1) {
+                    let url = m.substring(0, qPos);
+                    console.log(" --> url : " + url);
+                    botUrl = url;
+                    break;
+                } else {
+                    botUrl = m;
+                    break;
+                }
+            }
+            break;
+        }
+
+        var params = getUrlParams(chatbot.url);
+
+        if (!channel) {
+            channel = params["c"];
+            console.log(" -- > c : " + channel);
+        }
+        if (!agentUuid) {
+            agentUuid = params["bot"];
+            console.log(" --> bot : " + agentUuid);
+        }
+    }
+
+    botUrl = botUrl + "?bot=" + agentUuid + "&c=" + channel;
+
+    if (userId) {
+        botUrl = botUrl + "&u=" + userId;
+    }
+
+    botUrl =
+        botUrl +
+        "&client=" +
+        chatbot.branding +
+        "&jwt=" +
+        chatbot.authen_jwt +
+        "&auth_token=" +
+        jwt_token +
+        "&hideUpload=" +
+        chatbot.hideUploadUI;
+
+    console.log("[CUBIKA:BOTUI4-1.2] botUrl = " + botUrl);
+
+    let displayChatIcon = "block";
+    if (chatbot && chatbot.displayChatIcon == false) {
+        displayChatIcon = "none";
+    }
+
+    if (chatbot && chatbot.direct_connect == true) {
+        let uiUrl = chatbot.url;
+        let s = chatbot.dl_key;
+        let color = chatbot.color;
+        let logo = chatbot.logo;
+        let b = chatbot.botName;
+        let bg = "false";
+        let anim = "false";
+        let preLogin = chatbot.preLogin;
+        let namePlate = chatbot.hideNamePlate;
+        let browser = chatbot.browser;
+        let client = chatbot.branding;
+        let attachments = chatbot.hideAttachments;
+        let u = userId ? userId : "";
+        let c = chatbot.channel;
+        let hideUpload = chatbot.hideUploadUI;
+
+        m_botUrl =
+            uiUrl +
+            "?" +
+            "s=" +
+            s +
+            "&color=" +
+            color +
+            "&logo=" +
+            logo +
+            "&b=" +
+            b +
+            "&bg=" +
+            bg +
+            "&anim=" +
+            anim +
+            "&preLogin=" +
+            preLogin +
+            "&namePlate=" +
+            namePlate +
+            "&browser=" +
+            browser +
+            "&client=" +
+            client +
+            "&attachments=" +
+            attachments +
+            "&u=" +
+            u +
+            "&c=" +
+            c +
+            "&hideUpload=" +
+            hideUpload;
+
+        console.log(
+            "[CUBIKA:BOTUI4-1.2] direct_connect m_botUrl = " + m_botUrl
+        );
+    } else {
+        m_botUrl = botUrl;
+    }
+
+    var hover_callout = "";
+    if (chatbot.hover_callout) {
+        hover_callout = "hover-to-show";
+    }
+
+    var botText =
+        '<div id="cubik-bot-frame" style="' +
+        chatbot.position +
+        '">' +
+        '<div class="sywh-services" id="sywh-services">' +
+        '<div class="ddlg-chat" id="cubik-chat">' +
+        '<div id="bot-header" style="width: calc(100%); height:40px; background: ' +
+        chatbot.color +
+        "; background-repeat: no-repeat; background-position: right; border-top-left-radius: 15px; border-top-right-radius: 15px; color: white; font-family: " +
+        primaryFont +
+        '; vertical-align: middle; text-align: center; line-height: 40px; border-bottom: 1px solid #eee;  position: relative;">' +
+        '<div style="position: relative; font-size: ' +
+        bh_font_size +
+        ';">' +
+        chatbot.calltoaction +
+        "</div>" +
+        '<a class="cubik-close-bot" style="position: absolute;top: 10px;right: 10px;" >' +
+        //'<i class="fa fa-eye-slash" onclick="closeBot();" style="cursor:pointer;"></i>' +
+        icon_close_sm +
+        "</a>" +
+        "</div>" +
+        '<div style="width: 100%; height: calc(100% - 60px);">' +
+        //'<iframe width="100%" height="100%" src="' + botUrl + '" frameborder="0" allowFullScreen="true" id="frm_browser" style="display:block; width:calc(100%); max-width:100%; min-width:100%; min-height:100%;">' +
+        '<iframe width="100%" height="100%" src="" frameborder="0" allowFullScreen="true" id="frm_browser" style="display:block; width:calc(100%); max-width:100%; min-width:100%; min-height:100%;">' +
+        "Your browser does not support IFRAME" +
+        "</iframe>" +
+        "</div>" +
+        brandToolsLayer +
+        '<div id="bot-footer" style="width: calc(100%); height:20px; background: ' +
+        chatbot.color +
+        '; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; color: white; font-family: sans-serif; vertical-align: middle; text-align: center; line-height: 20px; font-size: xx-small;">' +
+        //'<div id="bot-footer" style="width: calc(100%); height:20px; background-color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; color: white; font-family: sans-serif; vertical-align: middle; text-align: center; line-height: 20px; font-size: xx-small;">' +
+        brandText +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        '<a class="cubik-open-bot ' +
+        hover_callout +
+        '" id="cubik-open-bot" style="font-family: ' +
+        primaryFont +
+        "; display: " +
+        displayChatIcon +
+        ';" data-tooltip="' +
+        calltoaction_text +
+        '" data-placement="left">' +
+        '<div id="chaticon" style="' +
+        icon_style +
+        '">' +
+        icon_chat +
+        "</div>" +
+        '<div id="closeicon" style="' +
+        icon_style +
+        '">' +
+        icon_close +
+        "</div>" +
+        "</a>" +
+        "</div>";
+    if (chatbot.headerIcon != undefined && chatbot.headerIcon != "") {
+        var botText =
+            '<div id="cubik-bot-frame" style="' +
+            chatbot.position +
+            '">' +
+            '<div class="sywh-services" id="sywh-services">' +
+            '<div class="ddlg-chat" id="cubik-chat">' +
+            '<div id="bot-header" style="width: calc(100%); height:40px; background: ' +
+            chatbot.color +
+            "; background-repeat: no-repeat; background-position: right; border-top-left-radius: 15px; border-top-right-radius: 15px; color: white; font-family: " +
+            primaryFont +
+            '; vertical-align: middle; text-align: center; line-height: 40px; border-bottom: 1px solid #eee; position: relative;">' +
+            '<a style="position: absolute;top: 2.5px;left: 10px;" >' +
+            chatbot.headerIcon +
+            "</a>" +
+            '<div style="font-size: ' +
+            bh_font_size +
+            ';">' +
+            chatbot.calltoaction +
+            "</div>" +
+            '<a class="cubik-close-bot" style="position: absolute;top: 10px;right: 10px;" >' +
+            //'<i class="fa fa-eye-slash" onclick="closeBot();" style="cursor:pointer;"></i>' +
+            icon_close_sm +
+            "</a>" +
+            "</div>" +
+            '<div style="width: 100%; height: calc(100% - 60px);">' +
+            //'<iframe width="100%" height="100%" src="' + botUrl + '" frameborder="0" allowFullScreen="true" id="frm_browser" style="display:block; width:calc(100%); max-width:100%; min-width:100%; min-height:100%;">' +
+            '<iframe width="100%" height="100%" src="" frameborder="0" allowFullScreen="true" id="frm_browser" style="display:block; width:calc(100%); max-width:100%; min-width:100%; min-height:100%;">' +
+            "Your browser does not support IFRAME" +
+            "</iframe>" +
+            "</div>" +
+            brandToolsLayer +
+            '<div id="bot-footer" style="width: calc(100%); height:20px; background: ' +
+            chatbot.color +
+            '; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; color: white; font-family: sans-serif; vertical-align: middle; text-align: center; line-height: 20px; font-size: xx-small;">' +
+            //'<div id="bot-footer" style="width: calc(100%); height:20px; background-color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; color: white; font-family: sans-serif; vertical-align: middle; text-align: center; line-height: 20px; font-size: xx-small;">' +
+            brandText +
+            "</div>" +
+            "</div>" +
+            "</div>" +
+            '<a class="cubik-open-bot ' +
+            hover_callout +
+            '" id="cubik-open-bot" style="font-family: ' +
+            primaryFont +
+            "; display: " +
+            displayChatIcon +
+            ';" data-tooltip="' +
+            calltoaction_text +
+            '" data-placement="left">' +
+            '<div id="chaticon" style="' +
+            icon_style +
+            '">' +
+            icon_chat +
+            "</div>" +
+            '<div id="closeicon" style="' +
+            icon_style +
+            '">' +
+            icon_close +
+            "</div>" +
+            "</a>" +
+            "</div>";
+    }
+
+    document.getElementById(botName).innerHTML = botText;
+
+    console.log(
+        "[CUBIKA] Init Done : " + document.getElementById(botName).innerHTML
+    );
+
+    //    alert('vvh : ' + vvh + ', vvw : ' + vvw);
+
+    changeBotOrientation();
+
+    window.addEventListener(
+        "orientationchange",
+        function () {
+            // Announce the new orientation number
+            //    	  alert(window.orientation);
+
+            changeBotOrientation();
+        },
+        false
+    );
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Store the window width
+        vvw = window.innerWidth;
+
+        // Resize Event
+        window.addEventListener("resize", function () {
+            // Check window width has actually changed and it's not just iOS triggering a resize event on scroll
+            if (window.innerWidth != vvw) {
+                // Update the window width for next time
+                vvw = window.innerWidth;
+
+                // Do stuff here
+            }
+
+            // Otherwise do nothing
+        });
+    });
+
+    var ready = (callback) => {
+        if (document.readyState != "loading") callback();
+        else document.addEventListener("DOMContentLoaded", callback);
+    };
+
+    if (chatbot.hideIconChatUI) {
+        hideIconchat();
+    }
+    ready(() => {
+        let cubikOpenBot = document.getElementById("cubik-open-bot");
+        if (cubikOpenBot) {
+            if (chatbot.calltoaction_callout == false) {
+                cubikOpenBot.classList.add("data-tooltip-hide");
+                cubikOpenBot.classList.add("cubik-bg-transparent");
+
+                //$('a.cubik-open-bot').addClass('data-tooltip-hide');
+                //$('a.cubik-open-bot').addClass('cubik-bg-transparent');
+            }
+        }
+
+        let fullscreen = false;
+
+        if (
+            os == "unknown" &&
+            (vvh <= 500 || vvw <= 400 || isStartFullScreen)
+        ) {
+            fullscreen = true;
+        } else if (os == "iOS" || os == "Android") {
+            fullscreen = true;
+        }
+
+        console.log("is fullscreen = " + fullscreen);
+
+        let cubikChat = document.getElementById("cubik-chat");
+
+        // Get the .click-me element
+        var clickMe = document.querySelector("a.cubik-open-bot");
+
+        // This will run when the .click-me element is clicked
+        clickMe.addEventListener("click", function (event) {
+            if (wasDragged) {
+                event.preventDefault();
+                event.stopPropagation();
+                return; // ไม่เปิด/ปิดบอทถ้าเป็น drag
+            }
+            let close_icon_chat = document.getElementById("cubik-icon-close");
+            if (close_icon_chat) {
+                close_icon_chat.style.display = "none";
+            }
+            let sywhService = document.getElementById("sywh-services");
+            if (sywhService) {
+                if (sywhService.classList.contains("active")) {
+                    hideBot(botName, chatbot);
+                    if (
+                        chatbot.onClickHideIcon ||
+                        (fullscreen == true && cubikChat)
+                    ) {
+                        document.getElementById(
+                            "cubik-open-bot"
+                        ).style.display = "block";
+                    }
+                } else {
+                    //changeBotOrientation();
+                    showBot(botName, chatbot);
+                    if (
+                        chatbot.onClickHideIcon ||
+                        (fullscreen == true && cubikChat)
+                    ) {
+                        document.getElementById(
+                            "cubik-open-bot"
+                        ).style.display = "none";
+                    }
+                }
+            }
+        });
+
+        var closeMe = document.querySelector("a.cubik-close-bot");
+
+        // This will run when the .click-me element is clicked
+        closeMe.addEventListener("click", function (event) {
+            let sywhService = document.getElementById("sywh-services");
+
+            if (sywhService.classList.contains("active")) {
+                hideBot(botName, chatbot);
+                console.log(
+                    "chatbot.onClickHideIcon : " + chatbot.onClickHideIcon
+                );
+                console.log("fullscreen : " + fullscreen);
+                console.log("cubikChat : " + cubikChat);
+                if (
+                    chatbot.onClickHideIcon ||
+                    (fullscreen == true && cubikChat)
+                ) {
+                    document.getElementById("cubik-open-bot").style.display =
+                        "block";
+                }
+            } else {
+                //changeBotOrientation();
+                showBot(botName, chatbot);
+                if (
+                    chatbot.onClickHideIcon ||
+                    (fullscreen == true && cubikChat)
+                ) {
+                    document.getElementById("cubik-open-bot").style.display =
+                        "none";
+                }
+            }
+            let close_icon_chat = document.getElementById("cubik-icon-close");
+            if (close_icon_chat) {
+                close_icon_chat.style.display = "flex";
+            }
+        });
+    });
+
+    /*
+    jQuery(function ($) {
+
+        if (chatbot.calltoaction_callout == false) {
+            $('a.cubik-open-bot').addClass('data-tooltip-hide');
+            $('a.cubik-open-bot').addClass('cubik-bg-transparent');
+        	
+        }
+
+        $('a.cubik-open-bot').click(function () {
+
+            if ($('.sywh-services').hasClass('active')) {
+                hideBot(botName, chatbot);
+
+            } else {
+
+                showBot(botName, chatbot);
+                //changeBotOrientation();
+            }
+        });
+        	
+    });
+    */
+
+    isBotInit = true;
+    m_chatbot = chatbot;
+
+    if (chatbot.autoStartBotWidget == true) {
+        showBot(botName, chatbot);
+    }
+
+    let botFrame = document.getElementById("cubik-bot-frame");
+    let offsetX, offsetY, isDragging = false;
+    let startX, startY;
+
+    botFrame.addEventListener("mousedown", function (e) {
+        isDragging = true;
+        offsetX = e.clientX - botFrame.offsetLeft;
+        offsetY = e.clientY - botFrame.offsetTop;
+        startX = e.clientX;
+        startY = e.clientY;
+        document.body.style.userSelect = "none";
+    });
+
+    document.addEventListener("mousemove", function (e) {
+        if (!isDragging) return;
+        botFrame.style.left = e.clientX - offsetX + "px";
+        botFrame.style.top = e.clientY - offsetY + "px";
+        wasDragged = true;
+    });
+
+    document.addEventListener("mouseup", function (e) {
+        if (!isDragging) return;
+        isDragging = false;
+        document.body.style.userSelect = "auto";
+
+        if (wasDragged) {
+            // ถ้าเป็น drag จริง ให้ snap แล้วป้องกัน click ซ้อน
+            const screenWidth = window.innerWidth;
+            const centerX = screenWidth / 2;
+            const iconX = e.clientX;
+
+            if (iconX < centerX) {
+                botFrame.style.left = "30px";
+                document.getElementById("cubik-chat").style.right = "unset";
+            } else {
+                botFrame.style.left = screenWidth - 80 + "px";
+                document.getElementById("cubik-chat").style.right = "350px";
+            }
+            botFrame.style.top = "unset";
+            botFrame.style.bottom = "30px";
+
+            // ป้องกันคลิกซ้อน
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // ตั้งค่าใหม่เพื่อเตรียม click รอบถัดไป
+        setTimeout(() => {
+            wasDragged = false;
+        }, 0);
+    });
+}
+
+function openBot() {
+    showBot(m_botName, m_chatbot);
+}
+
+function closeBot() {
+    hideBot(m_botName);
+}
+
+function showBot(botName, chatbot) {
+    //alert('showBot');
+    console.trace("Trace function call");
+    if (m_init == false) {
+        //alert('Iniit iframe');
+        let botBrowser = document.getElementById("frm_browser");
+        if (botBrowser) {
+            //alert('Set src = ' + m_botUrl);
+            botBrowser.src = m_botUrl;
+        }
+
+        if (chatbot && chatbot.tokenExpiredBroardcast == true) {
+            console.log("saveToken && connect WebSocket");
+            let userId = chatbot.userId;
+            if (userId && userId != "") {
+            } else {
+                userId = genUserId();
+            }
+
+            saveToken(chatbot);
+
+            connectBroadcastWebsocket(url_broadcastHost, chatbot.secureSSL);
+        }
+
+        m_init = true;
+    }
+
+    var os = getMobileOperatingSystem();
+    if (os == "unknown") {
+        showBotDesktop(botName, chatbot);
+    } else {
+        if (m_botUrl) {
+            if (chatbot && chatbot.mobileTab == true) {
+                window.open(m_botUrl, "_blank");
+            } else {
+                showBotDesktop(botName, chatbot);
+            }
+        }
+    }
+}
+
+function showBotDesktop(botName, chatbot) {
+    //alert('show Bot');
+    if (chatbot) {
+        m_chatbot = chatbot;
+    }
+
+    console.log("ShowBot : " + botName + " : " + JSON.stringify(m_chatbot));
+
+    isBotActive = true;
+
+    changeBotOrientation();
+    let sywhServices = document.getElementById("sywh-services");
+    let chatIcon = document.getElementById("chaticon");
+    let closeIcon = document.getElementById("closeicon");
+    let iconClose = document.getElementById("icon-close");
+    let iconOpen = document.getElementById("cubik-open-bot");
+    let cubikChat = document.getElementById("cubik-chat");
+
+    //$('.sywh-services').addClass('active');
+    sywhServices.classList.add("active");
+
+    //$('a.cubik-open-bot i.fa-comments').hide();
+    //$('a.cubik-open-bot i.fa-times').show();
+    iconClose.style.display = "block";
+
+    if (chatIcon) chatIcon.style.display = "none";
+    //$('#chaticon').hide();
+    if (closeIcon) closeIcon.style.display = "block";
+    //$('#closeicon').show();
+
+    //$('a.cubik-open-bot').addClass('data-tooltip-hide');
+    iconOpen.classList.add("data-tooltip-hide");
+
+    if (m_chatbot && m_chatbot.color) {
+        //$('a.cubik-open-bot').css("background-color", m_chatbot.color);
+        iconOpen.style.backgroundColor = m_chatbot.color;
+    } else {
+        //$('a.cubik-open-bot').css("background-color", "#129bf4");
+        iconOpen.style.backgroundColor = "#129bf4";
+    }
+
+    // $('.sywh-services a:nth-child(6)').delay(0).fadeIn();
+    // $('.sywh-services a:nth-child(5)').delay(0).fadeIn();
+    // $('.sywh-services a:nth-child(4)').delay(100).fadeIn();
+    // $('.sywh-services a:nth-child(3)').delay(200).fadeIn();
+    // $('.sywh-services a:nth-child(2)').delay(300).fadeIn();
+    // $('.sywh-services a:nth-child(1)').delay(400).fadeIn();
+
+    if (m_chatbot && m_chatbot.integration == "salesforce") {
+        document.getElementById("embedded-service").style.display = "none";
+        document.getElementById(botName).style.display = "block";
+    }
+
+    //$('.sywh-services .ddlg-chat').delay(0).fadeIn(300);
+    cubikChat.style.display = "block";
+}
+
+function hideBot(botName) {
+    isBotActive = false;
+
+    let sywhServices = document.getElementById("sywh-services");
+    let chatIcon = document.getElementById("chaticon");
+    let closeIcon = document.getElementById("closeicon");
+    let iconClose = document.getElementById("icon-close");
+    let iconOpen = document.getElementById("cubik-open-bot");
+    let cubikChat = document.getElementById("cubik-chat");
+    let botFrame = document.getElementById("cubik-bot-frame");
+
+    //$('.sywh-services').removeClass('active');
+    sywhServices.classList.remove("active");
+
+    //$('a.cubik-open-bot i.fa-times').hide();
+    iconClose.style.display = "none";
+    //$('a.cubik-open-bot i.fa-comments').show();
+
+    //$('#closeicon').hide();
+    closeIcon.style.display = "none";
+
+    //$('#chaticon').show();
+    chatIcon.style.display = "block";
+
+    if (m_chatbot.calltoaction_callout == true) {
+        //$('a.cubik-open-bot').removeClass('data-tooltip-hide');
+        iconOpen.classList.remove("data-tooltip-hide");
+    }
+
+    if (m_chatbot && m_chatbot.branding && m_chatbot.branding == "covid-19") {
+        //$('a.cubik-open-bot').css("background-color", "rgba(255,255,255,0)");
+        iconOpen.style.backgroundColor = "rgba(255,255,255,0)";
+    } else {
+        if (m_chatbot.chat_icon && m_chatbot.chat_icon.icon_img) {
+            //$('a.cubik-open-bot').css("background", "transparent");
+            iconOpen.style.background = "transparent";
+        } else {
+            if (m_chatbot && m_chatbot.color) {
+                //$('a.cubik-open-bot').css("background-color", m_chatbot.color);
+                iconOpen.style.backgroundColor = m_chatbot.color;
+            } else {
+                //$('a.cubik-open-bot').css("background-color", "#129bf4");
+                iconOpen.style.backgroundColor = "#129bf4";
+            }
+        }
+
+        //if (m_chatbot && m_chatbot.color) {
+        //	$('a.cubik-open-bot').css("background-color", m_chatbot.color);
+        //} else {
+        //	$('a.cubik-open-bot').css("background-color", "#129bf4");
+        //}
+    }
+
+    // $('.sywh-services a:nth-child(1)').delay(0).fadeOut();
+    // $('.sywh-services a:nth-child(2)').delay(100).fadeOut();
+    // $('.sywh-services a:nth-child(3)').delay(200).fadeOut();
+    // $('.sywh-services a:nth-child(4)').delay(300).fadeOut();
+    // $('.sywh-services a:nth-child(5)').delay(400).fadeOut();
+    //$('.sywh-services .ddlg-chat').delay(0).fadeOut(300);
+    cubikChat.style.display = "none";
+
+    if (isStartFullScreen == true || vvh <= 500 || vvw <= 500) {
+        //$('#cubik-bot-frame').css("bottom", "25px");
+        botFrame.style.bottom = "25px";
+        //$('#cubik-bot-frame').css("right", "25px");
+        botFrame.style.right = "25px";
+        //$('#cubik-bot-frame').css("top", "");
+        botFrame.style.top = "";
+    }
+
+    if (m_chatbot.integration == "salesforce") {
+        document.getElementById(botName).style.display = "none";
+        document.getElementById("embedded-service").style.display = "block";
+    }
+
+    changeBotOrientation();
+}
+
+function raiseTokenExpireEvent() {
+    console.log("TokenExpire Event raised !!! ");
+    let event = new Event("authenExpired");
+    document.dispatchEvent(event);
+}
+
+function refreshAuthenToken(newToken) {
+    console.log("Refresh Authen Token called !!!");
+    console.log("Current Token : " + jwt_token);
+
+    if (newToken && newToken != "") {
+        jwt_token = newToken;
+        console.log("New Token : " + jwt_token);
+
+        saveToken(m_chatbot);
+    } else {
+        console.log("New Token : " + newToken);
+    }
+}
+
+function refreshISPToken(newToken) {
+    console.log("Refresh ISP Token called !!!");
+    console.log("Current Token : " + jwt_token);
+
+    if (newToken && newToken != "") {
+        jwt_token = newToken;
+        console.log("New Token : " + jwt_token);
+
+        saveToken(m_chatbot);
+    } else {
+        console.log("New Token : " + newToken);
+    }
+}
+
+function setCookie(cname, cvalue, exdays, path, sameSite) {
+    if (!path) {
+        path = "";
+    }
+
+    if (!sameSite || sameSite == "") {
+        sameSite = "None; Secure";
+    }
+
+    if (sameSite == "none" || sameSite == "None") {
+        sameSite = "None; Secure";
+    }
+
+    cvalue = encodeURI(cvalue);
+
+    let d = new Date();
+    d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+    let expires = "expires=" + d.toUTCString();
+    let maxage = "Max-Age=" + d.toUTCString();
+
+    document.cookie =
+        cname +
+        "=" +
+        cvalue +
+        ";" +
+        expires +
+        ";" +
+        maxage +
+        ";path=/" +
+        path +
+        ";SameSite=" +
+        sameSite;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(";");
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == " ") {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function eraseCookie(name) {
+    document.cookie = name + "=; Max-Age=-99999999;";
+}
+
+function genUserId() {
+    let userId = getCookie("user-uuid");
+
+    console.log("[CUBIKA:BOTUI-JS] user-uuid = " + userId);
+
+    if (!userId || userId == "") {
+        userId = "dl-" + Math.random().toString(36).substr(2, 9);
+        setCookie("user-uuid", userId, 365);
+
+        console.log("user-uuid = " + userId);
+    }
+
+    return userId;
+}
+
+function saveToken(chatbot) {
+    if (!chatbot) {
+        return;
+    }
+
+    /*
+    {
+    "u" : "dl_ABCDEFG",
+    "authenToken" : "evGjooaW6DhDtDof72gW9HnXGKdnGzzJyPEMLGmIzMkLkdm8OHukzytmF7EBDXxUUDGUfpUdNcn+KxdTlN63jg==",
+    "agentUuid" : "UUID-ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    }
+    */
+
+    var params = {
+        u: chatbot.userId,
+        agentUuid: chatbot.agentId,
+        authenToken: jwt_token,
+        service: chatbot.channel,
+    };
+
+    let param_str = JSON.stringify(params);
+
+    let xhr = new XMLHttpRequest();
+    //xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            console.log(this.responseText);
+        }
+        if (this.readyState == XMLHttpRequest.DONE) {
+            // XMLHttpRequest.DONE == 4
+            if (this.status == 200) {
+                console.log("Save Token ==> " + this.responseText);
+            } else if (this.status == 400) {
+                console.log("There was an error 400");
+            } else {
+                console.log(
+                    "something else other than 200 or 400 was returned"
+                );
+            }
+        }
+    });
+
+    xhr.open("PUT", url_saveToken);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.send(param_str);
+
+    /*
+    $.ajax({
+        url : url_saveToken,
+        headers : {
+            "Content-Type": "application/json"
+        },
+        type : "PUT",
+        method : "PUT",
+        contentType: "raw",
+        dataType : "json",
+        redirection : 'follow',
+        data : param_str,
+        success : function(data) {
+            console.log('[CUBIKA:BOTUI-JS] saveToken ==> ' + JSON.stringify(data));
+        },
+        error : function() {
+    	
+        }
+    });
+    */
+}
+
+function connectBroadcastWebsocket(host, ssl) {
+    let proto = "ws";
+    if (ssl == true) {
+        proto = "wss";
+    }
+
+    //ws = new WebSocket(proto + "://" + host + jwt_token);
+    ws = new WebSocket(proto + "://" + host + userId);
+
+    ws.onmessage = function (event) {
+        //var log = document.getElementById("log");
+        //console.log(event.data);
+        var message = JSON.parse(event.data);
+        //log.innerHTML += message.from + " : " + message.content + "\n";
+        console.log(message.from + " : " + message.content + "\n");
+
+        if ("TOKENEXPIRED-" + jwt_token == message.content) {
+            raiseTokenExpireEvent();
+        }
+    };
+}
+
+function getUrlParams(purl) {
+    console.log("[CUBIKA:BOTUI-JS] (Fn) getUrlParams, url == " + purl);
+    var vars = {};
+    var parts = purl.replace(
+        /[?&]+([^=&]+)=([^&]*)/gi,
+        function (m, key, value) {
+            vars[key] = value;
+        }
+    );
+    return vars;
+}
+
+function parseJwt(token) {
+    var base64Url = token.split(".")[1];
+    if (!base64Url) {
+        return "{}";
+    }
+
+    var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    var jsonPayload = decodeURIComponent(
+        atob(base64)
+            .split("")
+            .map(function (c) {
+                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join("")
+    );
+
+    return JSON.parse(jsonPayload);
+}
+
+function hideIconchat() {
+    let iconCubik = document.getElementById("cubik-bot-frame");
+    let hideDiv = document.createElement("div");
+    hideDiv.setAttribute("id", "cubik-icon-close");
+
+    let hideIcon = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg"
+    );
+    hideIcon.setAttributeNS(null, "width", ".8em");
+    hideIcon.setAttributeNS(null, "height", ".8em");
+    hideIcon.setAttribute("viewBox", "0 0 24 24");
+    hideIcon.setAttribute("fill", "none");
+    hideIcon.setAttribute("stroke", "white");
+    hideIcon.setAttribute("stroke-width", "3");
+    hideIcon.setAttribute("stroke-linecap", "round");
+    hideIcon.setAttribute("stroke-linejoin", "round");
+    hideIcon.innerHTML =
+        '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
+
+    let iconImg = document.querySelector("div#chaticon>img");
+    iconImg = iconImg.getBoundingClientRect();
+
+    hideDiv.style.cssText =
+        "background-color: #303034;display: flex;align-items: center;justify-content: center; position: absolute; border-radius: 100%; height: 17px; width: 17px; cursor:pointer";
+    hideDiv.style.left = iconImg.width - 15;
+    hideDiv.style.top = 5;
+
+    hideDiv.addEventListener("click", (e) => {
+        iconCubik.style.display = "none";
+    });
+
+    hideDiv.appendChild(hideIcon);
+    iconCubik.appendChild(hideDiv);
+}

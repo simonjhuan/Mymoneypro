@@ -1,0 +1,123 @@
+@font-face {
+    font-family: 'DBOzoneXBold';
+    src: url('./DBOzoneXBold.eot');
+    src: url('./DBOzoneXBold.eot') format('embedded-opentype'),
+         url('./DBOzoneXBold.woff2') format('woff2'),
+         url('./DBOzoneXBold.woff') format('woff'),
+         url('./DBOzoneXBold.ttf') format('truetype'),
+         url('./DBOzoneXBold.svg#DBOzoneXBold') format('svg');
+}
+
+
+@font-face {
+    font-family: 'DBOzoneXBoldItalic';
+    src: url('./DBOzoneXBoldItalic.eot');
+    src: url('./DBOzoneXBoldItalic.eot') format('embedded-opentype'),
+         url('./DBOzoneXBoldItalic.woff2') format('woff2'),
+         url('./DBOzoneXBoldItalic.woff') format('woff'),
+         url('./DBOzoneXBoldItalic.ttf') format('truetype'),
+         url('./DBOzoneXBoldItalic.svg#DBOzoneXBoldItalic') format('svg');
+}
+
+
+@font-face {
+    font-family: 'DBOzoneXItalic';
+    src: url('./DBOzoneXItalic.eot');
+    src: url('./DBOzoneXItalic.eot') format('embedded-opentype'),
+         url('./DBOzoneXItalic.woff2') format('woff2'),
+         url('./DBOzoneXItalic.woff') format('woff'),
+         url('./DBOzoneXItalic.ttf') format('truetype'),
+         url('./DBOzoneXItalic.svg#DBOzoneXItalic') format('svg');
+}
+
+@font-face {
+    font-family: 'DBOzoneXLight';
+    src: url('./DBOzoneXLight.eot');
+    src: url('./DBOzoneXLight.eot') format('embedded-opentype'),
+         url('./DBOzoneXLight.woff2') format('woff2'),
+         url('./DBOzoneXLight.woff') format('woff'),
+         url('./DBOzoneXLight.ttf') format('truetype'),
+         url('./DBOzoneXLight.svg#DBOzoneXLight') format('svg');
+}
+
+
+@font-face {
+    font-family: 'DBOzoneXLightItalic';
+    src: url('./DBOzoneXLightItalic.eot');
+    src: url('./DBOzoneXLightItalic.eot') format('embedded-opentype'),
+         url('./DBOzoneXLightItalic.woff2') format('woff2'),
+         url('./DBOzoneXLightItalic.woff') format('woff'),
+         url('./DBOzoneXLightItalic.ttf') format('truetype'),
+         url('./DBOzoneXLightItalic.svg#DBOzoneXLightItalic') format('svg');
+}
+
+@font-face {
+    font-family: 'DBOzoneXMedium';
+    src: url('./DBOzoneXMedium.eot');
+    src: url('./DBOzoneXMedium.eot') format('embedded-opentype'),
+         url('./DBOzoneXMedium.woff2') format('woff2'),
+         url('./DBOzoneXMedium.woff') format('woff'),
+         url('./DBOzoneXMedium.ttf') format('truetype'),
+         url('./DBOzoneXMedium.svg#DBOzoneXMedium') format('svg');
+}
+
+
+@font-face {
+    font-family: 'DBOzoneXMediumItalic';
+    src: url('./DBOzoneXMediumItalic.eot');
+    src: url('./DBOzoneXMediumItalic.eot') format('embedded-opentype'),
+         url('./DBOzoneXMediumItalic.woff2') format('woff2'),
+         url('./DBOzoneXMediumItalic.woff') format('woff'),
+         url('./DBOzoneXMediumItalic.ttf') format('truetype'),
+         url('./DBOzoneXMediumItalic.svg#DBOzoneXMediumItalic') format('svg');
+}
+
+
+@font-face {
+    font-family: 'DBOzoneXUltraLighItalic';
+    src: url('./DBOzoneXUltraLighItalic.eot');
+    src: url('./DBOzoneXUltraLighItalic.eot') format('embedded-opentype'),
+         url('./DBOzoneXUltraLighItalic.woff2') format('woff2'),
+         url('./DBOzoneXUltraLighItalic.woff') format('woff'),
+         url('./DBOzoneXUltraLighItalic.ttf') format('truetype'),
+         url('./DBOzoneXUltraLighItalic.svg#DBOzoneXUltraLighItalic') format('svg');
+}
+
+
+@font-face {
+    font-family: 'DBOzoneXUltraLight';
+    src: url('./DBOzoneXUltraLight.eot');
+    src: url('./DBOzoneXUltraLight.eot') format('embedded-opentype'),
+         url('./DBOzoneXUltraLight.woff2') format('woff2'),
+         url('./DBOzoneXUltraLight.woff') format('woff'),
+         url('./DBOzoneXUltraLight.ttf') format('truetype'),
+         url('./DBOzoneXUltraLight.svg#DBOzoneXUltraLight') format('svg');
+}
+
+
+@font-face {
+    font-family: 'DBOzoneX';
+    src: url('./DBOzoneX.eot');
+    src: url('./DBOzoneX.eot') format('embedded-opentype'),
+         url('./DBOzoneX.woff2') format('woff2'),
+         url('./DBOzoneX.woff') format('woff'),
+         url('./DBOzoneX.ttf') format('truetype'),
+         url('./DBOzoneX.svg#DBOzoneX') format('svg');
+}
+
+@font-face {
+	font-family: 'Conv_Tahoma';
+	src: url('./Tahoma.eot');
+	src: local('☺'), url('./Tahoma.woff') format('woff'), url('./Tahoma.ttf') format('truetype'), url('./Tahoma.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+    font-family: 'Tahoma';
+    src: url('Tahoma.woff2') format('woff2'),
+        url('Tahoma.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+

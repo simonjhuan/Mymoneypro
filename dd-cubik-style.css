@@ -1,0 +1,251 @@
+#cubik-bot-frame {
+    /*
+    right: 25px;
+    bottom: 25px;
+    */
+    position: fixed;
+    z-index: 9999;
+}
+
+#cubik-bot-frame a {
+    position: relative;
+}
+
+#cubik-bot-frame a.cubik-open-bot {
+    /*background-color: #129bf4;*/
+    color: #fff;
+    line-height: 55px;
+    margin-top: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 23px;
+    width: 55px;
+    height: 55px;
+    text-align: center;
+    /*box-shadow: 2px 2px 8px -3px #000;*/
+    border-radius: 100%;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+    display: inline-block;
+}
+
+#cubik-bot-frame a.cubik-open-bot i {
+    line-height: 55px;
+}
+
+#cubik-bot-frame a.cubik-open-bot i.fa-times {
+    display: none;
+}
+
+#cubik-bot-frame .sywh-services {
+    width: 55px;
+    height: auto;
+}
+
+#cubik-bot-frame .sywh-services a {
+    display: none;
+}
+
+#cubik-bot-frame .sywh-services a i {
+    background-color: #129bf4;
+    color: #fff;
+    line-height: 55px;
+    margin-top: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 23px;
+    width: 55px;
+    height: 55px;
+    text-align: center;
+    box-shadow: 2px 2px 8px -3px #000;
+    border-radius: 100%;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+}
+
+#cubik-bot-frame .sywh-services a.email i {
+    background-color: #b92b27;
+}
+
+#cubik-bot-frame .sywh-services a.instagram i {
+    background-color: #e4405f;
+}
+
+#cubik-bot-frame .sywh-services a.messenger i {
+    background-color: #0084ff;
+}
+
+#cubik-bot-frame .sywh-services a.whatsapp i {
+    background-color: #25d366;
+}
+
+#cubik-bot-frame .sywh-services a.call i {
+    background-color: #ff6600;
+}
+
+#cubik-bot-frame .sywh-services a {
+    display: initial;
+    color: white;
+}
+
+a[data-tooltip] {
+    position: relative;
+
+}
+
+a[data-tooltip]::before,
+a[data-tooltip]::after {
+    position: absolute;
+    display: none;
+    opacity: 0.85;
+    transition: all 0.3s ease-in-out;
+}
+
+a[data-tooltip]::before {
+    content: attr(data-tooltip);
+    background: #000;
+    color: #fff;
+    font-size: 13px;
+    padding: 7px 11px;
+    border-radius: 5px;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+a[data-tooltip]::after {
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    content: "";
+}
+
+a[data-tooltip]:hover::before,
+a[data-tooltip]:hover::after {
+    display: none !important;
+}
+
+a.cubik-open-bot[data-tooltip]::before,
+a.cubik-open-bot[data-tooltip]::after {
+    display: block;
+}
+
+a.hover-to-show[data-tooltip]:hover::before,
+a.hover-to-show[data-tooltip]:hover::after {
+    display: block !important;
+}
+
+a.cubik-open-bot.hover-to-show[data-tooltip]::before,
+a.cubik-open-bot.hover-to-show[data-tooltip]::after {
+    display: none;
+}
+
+a.data-tooltip-hide[data-tooltip]::before,
+a.data-tooltip-hide[data-tooltip]::after {
+    display: none !important;
+}
+
+a.cubik-open-bot[data-tooltip][data-placement="left"]::before {
+    top: 11px;
+}
+
+a[data-tooltip][data-placement="left"]::before {
+    top: -7px;
+    right: 100%;
+    line-height: normal;
+    margin-right: 10px;
+}
+
+a[data-tooltip][data-placement="left"]::after {
+    border-left-color: #000;
+    border-right: none;
+    top: 50%;
+    right: 100%;
+    margin-top: -6px;
+    margin-right: 4px;
+}
+
+a[data-tooltip][data-placement="right"]::before {
+    top: -7px;
+    left: 100%;
+    line-height: normal;
+    margin-left: 10px;
+}
+
+a[data-tooltip][data-placement="right"]::after {
+    border-right-color: #000;
+    border-left: none;
+    top: 50%;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: 4px;
+}
+
+a[data-tooltip][data-placement="top"]::before {
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 10px;
+}
+
+a[data-tooltip][data-placement="top"]::after {
+    border-top-color: #000;
+    border-bottom: none;
+    bottom: 100%;
+    left: 10px;
+    margin-bottom: 4px;
+}
+
+a[data-tooltip][data-placement="bottom"]::before {
+    top: 100%;
+    left: 0;
+    margin-top: 10px;
+}
+
+a[data-tooltip][data-placement="bottom"]::after {
+    border-bottom-color: #000;
+    border-top: none;
+    top: 100%;
+    left: 10px;
+    margin-top: 4px;
+}
+
+#cubik-bot-frame .ddlg-chat {
+    min-height: 200px;
+    max-height: 600px;
+    height: calc(100vh - 90px);
+    width: calc(100vw);
+    min-width: 200px;
+    max-width: 400px;
+    background-color: #fff;
+    box-shadow: 2px 2px 8px -3px #000;
+    position: relative;
+    right: 350px;
+    display: none;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+
+}
+
+.cubik-bg-transparent {
+    background: transparent;
+
+}
+
+.cubik-icon-close {
+    float: right;
+    display: inline-block;
+    padding: 2px 5px;
+    background: #ccc;
+}
+
+:root {
+    --app-height: 100%;
+}
+
+#chaticon>img {
+    -webkit-user-drag: none;
+    user-drag: none;
+}

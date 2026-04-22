@@ -1,0 +1,42 @@
+.wrap-chart-about-pie{
+     
+     width:50%;
+}
+.wrap-chart-select-type{
+     
+}
+
+.inactive{
+     background: white;
+     color:#0d3ea5;
+     
+     /* border-radius: 5px; */
+}
+.wrap-list-chart-type{
+     list-style: none;
+     padding:0;
+}
+.circle-icon-list-type
+{
+     margin-right:15px;
+     width:35px;
+     height:35px;
+     border-radius: 50%;
+     background: red;
+}
+.green-text {
+     color: #71AD47;
+}
+.wrap-chart-circle i{
+     font-size:25px;
+     margin-right:15px;
+}
+.content-detail-title-chart{
+     
+     font-size:20px;
+     margin-top:2px;
+}
+.sub-content-detail-title-chart{
+     color:#848482;
+     font-size:17px;
+}
