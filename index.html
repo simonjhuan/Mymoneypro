@@ -58,96 +58,52 @@ fetch('data.json')
     return response.json();
   })
   .then(data => {
-    // ซ่อน loading
     document.getElementById('loading').style.display = 'none';
     
     const labels = data.map(d => d.date);
     
-    // สร้างกราฟที่มี 3 เส้น
     const ctx = document.getElementById('myChart').getContext('2d');
     new Chart(ctx, {
       type: 'line',
-       {
+      data: {
         labels: labels,
         datasets: [
           {
             label: 'ชีวิต 35 (g35)',
-             data.map(d => d.g35),
+            data: data.map(d => d.g35),
             borderColor: '#36a2eb',
             backgroundColor: 'rgba(54, 162, 235, 0.1)',
             borderWidth: 3,
             fill: false,
-            tension: 0.3,
-            pointRadius: 4,
-            pointHoverRadius: 6
+            tension: 0.3
           },
           {
             label: 'ตราสารหนี้ (bond)',
-             data.map(d => d.bond),
+            data: data.map(d => d.bond),
             borderColor: '#ff6384',
             backgroundColor: 'rgba(255, 99, 132, 0.1)',
             borderWidth: 3,
             fill: false,
-            tension: 0.3,
-            pointRadius: 4,
-            pointHoverRadius: 6
+            tension: 0.3
           },
           {
             label: 'ทองคำ (gold)',
-             data.map(d => d.gold),
+            data: data.map(d => d.gold),
             borderColor: '#ffcd56',
             backgroundColor: 'rgba(255, 206, 86, 0.1)',
             borderWidth: 3,
             fill: false,
-            tension: 0.3,
-            pointRadius: 4,
-            pointHoverRadius: 6
+            tension: 0.3
           }
         ]
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
         plugins: {
           legend: {
             display: true,
-            position: 'top',
-            labels: {
-              padding: 15,
-              usePointStyle: true
-            }
-          },
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            padding: 12,
-            cornerRadius: 8
+            position: 'top'
           }
-        },
-        scales: {
-          y: {
-            beginAtZero: false,
-            grid: {
-              color: 'rgba(0,0,0,0.05)'
-            },
-            ticks: {
-              padding: 10
-            }
-          },
-          x: {
-            grid: {
-              color: 'rgba(0,0,0,0.05)'
-            },
-            ticks: {
-              padding: 10
-            }
-          }
-        },
-        interaction: {
-          mode: 'nearest',
-          axis: 'x',
-          intersect: false
         }
       }
     });
@@ -156,9 +112,7 @@ fetch('data.json')
     document.getElementById('loading').style.display = 'none';
     document.getElementById('error').style.display = 'block';
     document.getElementById('error').innerHTML = 
-      '<strong>⚠️ เกิดข้อผิดพลาด</strong><br>' + 
-      error.message + 
-      '<br><br>ตรวจสอบว่าไฟล์ data.json มีอยู่และอยู่โฟลเดอร์เดียวกับ index.html';
+      '<strong>⚠️ เกิดข้อผิดพลาด</strong><br>' + error.message;
     console.error('Error:', error);
   });
 </script>
