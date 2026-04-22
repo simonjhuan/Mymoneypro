@@ -1,39 +1,41 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Dashboard</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-
-<body>
-
-<h2>📊 กราฟกองทุน</h2>
+<select id="fund">
+  <option value="g35">ชีวิต 35</option>
+  <option value="bond">ตราสารหนี้</option>
+  <option value="gold">ทองคำ</option>
+</select>
 
 <canvas id="myChart"></canvas>
 
 <script>
+let chart;
+
 fetch('data.json')
 .then(res => res.json())
 .then(data => {
 
-  const labels = data.map(d => d.date);
-  const values = data.map(d => d.value);
+  function draw(fund){
+    const labels = data.map(d => d.date);
+    const values = data.map(d => d[fund]);
 
-  new Chart(document.getElementById('myChart'), {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'มูลค่ารวม',
-        data: values
-      }]
-    }
+    if(chart) chart.destroy();
+
+    chart = new Chart(document.getElementById('myChart'), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: fund,
+          data: values
+        }]
+      }
+    });
+  }
+
+  draw('g35');
+
+  document.getElementById('fund').addEventListener('change', e=>{
+    draw(e.target.value);
   });
 
 });
 </script>
-
-</body>
-</html>
