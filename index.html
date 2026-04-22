@@ -2,45 +2,36 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Mymoneypro</title>
+<title>Dashboard</title>
 
-<link rel="stylesheet" href="aboutmain.css">
-
-<script src="Chart.min.js.download"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-<h2>📊 มูลค่ากองทุน (เมษายน 2569)</h2>
+<h2>📊 กราฟกองทุน</h2>
 
 <canvas id="myChart"></canvas>
 
 <script>
-const labels = [
-"01/04","02/04","03/04","07/04","08/04","09/04","10/04","16/04","17/04"
-];
+fetch('data.json')
+.then(res => res.json())
+.then(data => {
 
-const data = [
-1511811741382,
-1513171934160,
-1511469400530,
-1512339889713,
-1513555604792,
-1516278647315,
-1517567773030,
-1522298532986,
-1524881107090
-];
+  const labels = data.map(d => d.date);
+  const values = data.map(d => d.value);
 
-new Chart(document.getElementById('myChart'), {
+  new Chart(document.getElementById('myChart'), {
     type: 'line',
     data: {
-        labels: labels,
-        datasets: [{
-            label: 'มูลค่ารวม',
-            data: data
-        }]
+      labels: labels,
+      datasets: [{
+        label: 'มูลค่ารวม',
+        data: values
+      }]
     }
+  });
+
 });
 </script>
 
